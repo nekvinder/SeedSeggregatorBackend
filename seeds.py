@@ -34,7 +34,6 @@ kernel = np.ones((4, 4), 'int')
 percentages = {}
 f = open("out.txt", "w+")
 
-# while True:
 for image in onlyfiles:
     imgx = cv.imread(imagesPath + image)
     if not paused:
