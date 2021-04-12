@@ -8,7 +8,6 @@ window_detection_name = "frame"
 imagesPath = "Images/"
 onlyfiles = [f for f in listdir(imagesPath) if isfile(join(imagesPath, f))]
 
-
 class SeedSeggregator:
     def __init__(self) -> None:
         self.paused = False
