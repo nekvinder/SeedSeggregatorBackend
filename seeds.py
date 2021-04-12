@@ -2,6 +2,7 @@ from os.path import isfile, join
 from os import listdir
 import numpy as np
 import cv2 as cv
+import sys
 
 
 class SeedSeggregator:
@@ -82,9 +83,14 @@ class SeedSeggregator:
         return {"blue": self.__calcPercentage(blueMask), "green": self.__calcPercentage(greenMask), "yellow": self.__calcPercentage(yellowMask)}
 
 
-imagesPath = "Images/"
-onlyfiles = [f for f in listdir(imagesPath) if isfile(join(imagesPath, f))]
+imageName
 
 seedSeggregator = SeedSeggregator()
-for img in onlyfiles:
-    print({"imageName:": img, "percentages":  seedSeggregator.processImage(imagesPath+img)})
+print({"imageName:": sys.argv[1], "percentages":  seedSeggregator.processImage(
+    sys.argv[1])})
+# print(+"hihihih")
+# imagesPath = "Images/"
+# onlyfiles = [f for f in listdir(imagesPath) if isfile(join(imagesPath, f))]
+
+# for img in onlyfiles:
+#     print({"imageName:": img, "percentages":  seedSeggregator.processImage(imagesPath+img)})
