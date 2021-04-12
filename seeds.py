@@ -88,9 +88,7 @@ seedSeggregator = SeedSeggregator()
 print({"imageName:": sys.argv[1], "percentages":  seedSeggregator.processImage(
     sys.argv[1])})
 
-# print(+"hihihih")
 # imagesPath = "Images/"
 # onlyfiles = [f for f in listdir(imagesPath) if isfile(join(imagesPath, f))]
-
 # for img in onlyfiles:
 #     print({"imageName:": img, "percentages":  seedSeggregator.processImage(imagesPath+img)})

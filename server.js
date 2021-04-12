@@ -1,29 +1,38 @@
-//Import express.js module and create its variable.
 const express = require('express')
 const app = express()
-
-//Import PythonShell module.
 const { PythonShell } = require('python-shell')
+var busboy = require('connect-busboy')
+var path = require('path')
+var fs = require('fs-extra')
 
-//Router to handle the incoming request.
-app.get('/', (req, res, next) => {
-  //Here are the option object in which arguments can be passed for the python_test.js.
-  let options = {
-    mode: 'text',
-    pythonOptions: ['-u'], // get print results in real-time
-    scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
-    args: ['Images/DSC_0078.JPG'], //An argument which can be accessed in the script using sys.argv[1]
-  }
+app.use(busboy())
+app.use(express.static(path.join(__dirname, 'Images/')))
 
-  PythonShell.run('seeds.py', options, function (err, result) {
-    if (err) throw err
-    // result is an array consisting of messages collected
-    //during execution of script.
-    console.log('result: ', result.toString())
-    res.send(result.toString())
+app.post('/', (req, res, next) => {
+  var fstream, uploadedFileName
+  req.pipe(req.busboy)
+  req.busboy.on('file', function (fieldname, file, filename) {
+    console.log('Uploading: ' + filename)
+    uploadedFileName = filename
+    fstream = fs.createWriteStream(__dirname + '/Images/' + filename)
+    file.pipe(fstream)
+    fstream.on('close', function () {
+      console.log('Upload Finished of ' + filename)
+      let options = {
+        mode: 'text',
+        pythonOptions: ['-u'],
+        scriptPath: '',
+        args: ['Images/' + uploadedFileName],
+      }
+
+      PythonShell.run('seeds.py', options, function (err, result) {
+        if (err) throw err
+        console.log('result: ', result.toString())
+        res.json(result)
+      })
+    })
   })
 })
 
-//Creates the server on default port 8000 and can be accessed through localhost:8000
 const port = 8000
 app.listen(port, () => console.log(`Server connected to ${port}`))
