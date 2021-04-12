@@ -12,7 +12,7 @@ app.get('/', (req, res, next) => {
     mode: 'text',
     pythonOptions: ['-u'], // get print results in real-time
     scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
-    args: ['shubhamk314'], //An argument which can be accessed in the script using sys.argv[1]
+    args: ['Images/DSC_0078.JPG'], //An argument which can be accessed in the script using sys.argv[1]
   }
 
   PythonShell.run('seeds.py', options, function (err, result) {
