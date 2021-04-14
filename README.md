@@ -1,4 +1,9 @@
-# Setup
+## Test
+
+Curl command to send post request to the server
+`curl -F "file=@ImagesSrc/DSC_0078.JPG" --location --request POST 'http://meet.nekvinder.com:8000'`
+
+## Setup
 
 ```
 sudo apt install npm
