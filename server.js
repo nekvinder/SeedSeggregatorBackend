@@ -20,7 +20,7 @@ app.use(function (req, res, next) {
 
 app.post('/', (req, res, next) => {
   try {
-console.log(req.getUrl())
+    console.log(req.getUrl())
     var fstream, uploadedFileName
     req.pipe(req.busboy)
     req.busboy.on('file', function (fieldname, file, filename) {
@@ -32,17 +32,16 @@ console.log(req.getUrl())
         console.log(error)
       }),
         fstream.on('close', function () {
-          console.log('Upload Finished of ' + filename)
           let options = {
             mode: 'text',
             pythonOptions: ['-u'],
             scriptPath: '',
             args: ['Images/' + uploadedFileName],
           }
-
           PythonShell.run('seeds.py', options, function (err, result) {
             if (err) throw err
-            console.log('result: ', result.toString())
+            result = JSON.parse(result)
+            result.imageName = req.getUrl() + result.imageName
             res.json(result)
           })
         })

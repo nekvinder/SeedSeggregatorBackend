@@ -3,6 +3,7 @@ from os import listdir
 import numpy as np
 import cv2 as cv
 import sys
+import json
 
 
 class SeedSeggregator:
@@ -85,8 +86,8 @@ class SeedSeggregator:
 
 # print(sys.argv[1])
 seedSeggregator = SeedSeggregator()
-print({"imageName:": sys.argv[1], "percentages":  seedSeggregator.processImage(
-    sys.argv[1])})
+print(json.dumps({"imageName": sys.argv[1], "percentages":  seedSeggregator.processImage(
+    sys.argv[1])}))
 
 # imagesPath = "Images/"
 # onlyfiles = [f for f in listdir(imagesPath) if isfile(join(imagesPath, f))]
