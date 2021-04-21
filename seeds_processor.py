@@ -3,15 +3,22 @@ import cv2 as cv
 window_capture_name, window_detection_name = 'Video Capture', 'Object Detection'
 window_detection_name = "frame"
 paused = False
-imgx = cv.imread('Images/DSC_0078.JPG')
+imgx = cv.imread('Images/5.jpg')
+
+
+size = 250
+marginX = 150
+marginY = 150
 
 
 def showVid(refno, frame, title=""):
     refno -= 1
     if title == "":
         title = str(refno)
+    frame = cv.resize(frame, (size, size),
+                      interpolation=cv.INTER_AREA)  # resize
     cv.imshow(title, frame)
-    cv.moveWindow(title, (refno % 3)*600, (refno//3)*600)
+    cv.moveWindow(title, (refno % 3)*(size+marginX), (refno//3)*(size+marginY))
 
 
 def calcPercentage(msk):
@@ -30,7 +37,7 @@ kernel = np.ones((4, 4), 'int')
 while True:
     if not paused:
         frame = imgx
-    frame = frame[50:-150, 50:-100]  # crop
+    # frame = frame[50:-150, 50:-100]  # crop
     # frame = cv.resize(frame, (600, 600), interpolation=cv.INTER_AREA)  # resize
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     maskSeedsGroup = cv.inRange(hsv, (0, 0, 0), (179, 255, 243))

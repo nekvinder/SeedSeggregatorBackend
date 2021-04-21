@@ -44,7 +44,7 @@ class SeedSeggregator:
         imgx = cv.imread(imagePath)
         if not self.paused:
             frame = imgx
-        frame = frame[50:-150, 50:-100]  # crop
+        # frame = frame[50:-150, 50:-100]  # crop
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
         maskSeedsGroup = cv.inRange(hsv, (0, 0, 0), (179, 255, 243))
         dilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, self.kernel)
