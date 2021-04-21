@@ -8,23 +8,29 @@ import json
 
 class SeedSeggregator:
     def __init__(self) -> None:
-        self.paused = False
-        self.kernel = np.ones((4, 4), 'int')
-        self.percentages = {}
+        self.__paused = False
+        self.__kernel = np.ones((4, 4), 'int')
+        self.__percentages = {}
         self.f = open("out.txt", "w+")
-        self.size = 250
-        self.marginX = 150
-        self.marginY = 150
+        self.__size = 250
+        self.__marginX = 150
+        self.__marginY = 150
+        self.__debugging = False
+        self.__segregatorConfig = {"yellow": [0, 102, 60, 62, 255, 255],
+                                   "green": [27, 0, 0, 84, 107, 184]}
+
+    def enableDebugging(self, ):
+        self.__debugging = True
 
     def __showVid(self, refno, frame, title=""):
         refno -= 1
         if title == "":
             title = str(refno)
-        frame = cv.resize(frame, (self.size, self.size),
+        frame = cv.resize(frame, (self.__size, self.__size),
                           interpolation=cv.INTER_AREA)  # resize
         cv.imshow(title, frame)
-        cv.moveWindow(title, (refno % 3)*(self.size + self.marginX),
-                      (refno//3)*(self.size+self.marginY))
+        cv.moveWindow(title, (refno % 3)*(self.__size + self.__marginX),
+                      (refno//3)*(self.__size+self.__marginY))
 
     def __calcPercentage(self, msk):
         '''
@@ -41,19 +47,19 @@ class SeedSeggregator:
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
         mask = cv.inRange(
             hsv, (threshold[0], threshold[1], threshold[2]), (threshold[3], threshold[4], threshold[5]))
-        dialatedMask = cv.dilate(mask, self.kernel)
+        dialatedMask = cv.dilate(mask, self.__kernel)
         maskedFrame = cv.bitwise_and(
             frame, frame, mask=dialatedMask)
         return dialatedMask, maskedFrame
 
     def processImage(self, imagePath):
         imgx = cv.imread(imagePath)
-        if not self.paused:
+        if not self.__paused:
             frame = imgx
         # frame = frame[50:-150, 50:-100]  # crop
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
         maskSeedsGroup = cv.inRange(hsv, (0, 0, 0), (179, 255, 243))
-        dilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, self.kernel)
+        dilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, self.__kernel)
         onlySeedsGroup = cv.bitwise_and(
             frame, frame, mask=dilatedMaskSeedsGroup)
         ret, thrshed = cv.threshold(cv.cvtColor(
@@ -64,7 +70,7 @@ class SeedSeggregator:
         if len(contours) > 0:
             for c in contours:
                 areaTmp = cv.contourArea(c)
-                if areaTmp > 4000:
+                if areaTmp > 500:
                     x, y, w, h = cv.boundingRect(c)
                     cv.putText(frame, str(areaTmp), (x, y),
                                cv.FONT_HERSHEY_PLAIN, 1, (255, 255, 0), 1)
@@ -75,21 +81,31 @@ class SeedSeggregator:
         onlySeedsGroup = onlySeedsGroup[y: y+h, x:x+w]
         thrshed = thrshed[y: y+h, x:x+w]
 
-        yellowMask, yellowFrame = self.__applyHSVThreshold(
-            frame, [0, 102, 60, 62, 255, 255])
-        greenMask, greenFrame = self.__applyHSVThreshold(
-            frame, [27, 0, 0, 84, 107, 184])
-        # self.__showVid(1, frame, "frame")
-        # self.__showVid(3, yellowFrame, 'onlySeedsGroupyellow')
-        # self.__showVid(4, greenFrame, 'onlySeedsGroupgreen')
-        # self.__showVid(5, blueFrame, 'onlySeedsGroupblue')
-        # key = cv.waitKey(1000) & 0xFF
+        Masks = {}
+        Frames = {}
+        Percentages = {}
+
+        for k in self.__segregatorConfig:
+            Masks[k], Frames[k] = self.__applyHSVThreshold(
+                frame, self.__segregatorConfig[k])
+            Percentages[k] = self.__calcPercentage(Masks[k])
+
+        if self.__debugging:
+            self.__showVid(1, frame, "frame")
+            i = 2
+            for k in self.__segregatorConfig:
+                self.__showVid(i, Frames[k], k)
+                i += 1
+
+        cv.waitKey(0) & 0xFF
         cv.destroyAllWindows()
-        return {"green": self.__calcPercentage(greenMask), "yellow": self.__calcPercentage(yellowMask)}
+        return Percentages
 
 
 # print(sys.argv[1])
 seedSeggregator = SeedSeggregator()
+seedSeggregator.enableDebugging()
+
 print(json.dumps(
     {"imageName": sys.argv[1], "percentages":  seedSeggregator.processImage(sys.argv[1])}))
 
