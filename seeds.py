@@ -69,8 +69,6 @@ class SeedSeggregator:
         onlySeedsGroup = onlySeedsGroup[y: y+h, x:x+w]
         thrshed = thrshed[y: y+h, x:x+w]
 
-        blueMask, blueFrame = self.__applyHSVThreshold(
-            frame, [0, 0, 0, 180, 98, 150])
         yellowMask, yellowFrame = self.__applyHSVThreshold(
             frame, [0, 102, 60, 62, 255, 255])
         greenMask, greenFrame = self.__applyHSVThreshold(
@@ -81,7 +79,7 @@ class SeedSeggregator:
         # self.__showVid(5, blueFrame, 'onlySeedsGroupblue')
         # key = cv.waitKey(1000) & 0xFF
         cv.destroyAllWindows()
-        return {"blue": self.__calcPercentage(blueMask), "green": self.__calcPercentage(greenMask), "yellow": self.__calcPercentage(yellowMask)}
+        return {"green": self.__calcPercentage(greenMask), "yellow": self.__calcPercentage(yellowMask)}
 
 
 # print(sys.argv[1])
