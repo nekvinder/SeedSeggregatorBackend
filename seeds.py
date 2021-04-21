@@ -10,8 +10,6 @@ class SeedSeggregator:
     def __init__(self) -> None:
         self.__paused = False
         self.__kernel = np.ones((4, 4), 'int')
-        self.__percentages = {}
-        self.f = open("out.txt", "w+")
         self.__size = 250
         self.__marginX = 150
         self.__marginY = 150
@@ -102,7 +100,6 @@ class SeedSeggregator:
         return Percentages
 
 
-# print(sys.argv[1])
 seedSeggregator = SeedSeggregator()
 seedSeggregator.enableDebugging()
 
