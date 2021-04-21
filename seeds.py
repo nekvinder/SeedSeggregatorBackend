@@ -12,13 +12,19 @@ class SeedSeggregator:
         self.kernel = np.ones((4, 4), 'int')
         self.percentages = {}
         self.f = open("out.txt", "w+")
+        self.size = 250
+        self.marginX = 150
+        self.marginY = 150
 
     def __showVid(self, refno, frame, title=""):
         refno -= 1
         if title == "":
             title = str(refno)
+        frame = cv.resize(frame, (self.size, self.size),
+                          interpolation=cv.INTER_AREA)  # resize
         cv.imshow(title, frame)
-        cv.moveWindow(title, (refno % 3)*600, (refno//3)*600)
+        cv.moveWindow(title, (refno % 3)*(self.size + self.marginX),
+                      (refno//3)*(self.size+self.marginY))
 
     def __calcPercentage(self, msk):
         '''
@@ -84,8 +90,8 @@ class SeedSeggregator:
 
 # print(sys.argv[1])
 seedSeggregator = SeedSeggregator()
-print(json.dumps({"imageName": sys.argv[1], "percentages":  seedSeggregator.processImage(
-    sys.argv[1])}))
+print(json.dumps(
+    {"imageName": sys.argv[1], "percentages":  seedSeggregator.processImage(sys.argv[1])}))
 
 # imagesPath = "Images/"
 # onlyfiles = [f for f in listdir(imagesPath) if isfile(join(imagesPath, f))]
