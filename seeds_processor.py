@@ -1,116 +1,125 @@
 import numpy as np
 import cv2 as cv
+
+max_value, max_value_H = 255, 360//2
+low_V, low_H, low_S = 0, 0, 0
+high_H, high_V, high_S = max_value_H, max_value, max_value
+low_H, low_S, low_V, high_H, high_S, high_V = [0, 0, 0, 180, 255, 255]
 window_capture_name, window_detection_name = 'Video Capture', 'Object Detection'
-window_detection_name = "frame"
-paused = False
-imgx = cv.imread('Images/5.jpg')
+low_H_name, low_S_name, low_V_name = 'Low H', 'Low S', 'Low V'
+high_H_name, high_S_name, high_V_name = 'High H', 'High S', 'High V'
+pauseMS = 1
 
 
-size = 250
-marginX = 150
-marginY = 150
+def on_low_H_thresh_trackbar(val):
+    global low_H
+    global high_H
+    low_H = val
+    low_H = min(high_H-1, low_H)
+    cv.setTrackbarPos(low_H_name, window_detection_name, low_H)
+
+
+def on_high_H_thresh_trackbar(val):
+    global low_H
+    global high_H
+    high_H = val
+    high_H = max(high_H, low_H+1)
+    cv.setTrackbarPos(high_H_name, window_detection_name, high_H)
+
+
+def on_low_S_thresh_trackbar(val):
+    global low_S
+    global high_S
+    low_S = val
+    low_S = min(high_S-1, low_S)
+    cv.setTrackbarPos(low_S_name, window_detection_name, low_S)
+
+
+def on_high_S_thresh_trackbar(val):
+    global low_S
+    global high_S
+    high_S = val
+    high_S = max(high_S, low_S+1)
+    cv.setTrackbarPos(high_S_name, window_detection_name, high_S)
+
+
+def on_low_V_thresh_trackbar(val):
+    global low_V
+    global high_V
+    low_V = val
+    low_V = min(high_V-1, low_V)
+    cv.setTrackbarPos(low_V_name, window_detection_name, low_V)
+
+
+def on_high_V_thresh_trackbar(val):
+    global low_V
+    global high_V
+    high_V = val
+    high_V = max(high_V, low_V+1)
+    cv.setTrackbarPos(high_V_name, window_detection_name, high_V)
 
 
 def showVid(refno, frame, title=""):
     refno -= 1
     if title == "":
         title = str(refno)
-    frame = cv.resize(frame, (size, size),
-                      interpolation=cv.INTER_AREA)  # resize
     cv.imshow(title, frame)
-    cv.moveWindow(title, (refno % 3)*(size+marginX), (refno//3)*(size+marginY))
+    cv.moveWindow(title, (refno % 3)*600, (refno//3)*600)
 
 
-def calcPercentage(msk):
-    ''' 
-    returns the percentage of white in a binary image 
-    '''
-    height, width = msk.shape[:2]
-    num_pixels = height * width
-    count_white = cv.countNonZero(msk)
-    percent_white = (count_white/num_pixels) * 100
-    percent_white = round(percent_white, 2)
-    return percent_white
+window_detection_name = "frame"
+cv.namedWindow(window_detection_name)
+cv.createTrackbar(low_H_name, window_detection_name, low_H,
+                  max_value_H, on_low_H_thresh_trackbar)
+cv.createTrackbar(high_H_name, window_detection_name, high_H,
+                  max_value_H, on_high_H_thresh_trackbar)
+cv.createTrackbar(low_S_name, window_detection_name, low_S,
+                  max_value, on_low_S_thresh_trackbar)
+cv.createTrackbar(high_S_name, window_detection_name, high_S,
+                  max_value, on_high_S_thresh_trackbar)
+cv.createTrackbar(low_V_name, window_detection_name, low_V,
+                  max_value, on_low_V_thresh_trackbar)
+cv.createTrackbar(high_V_name, window_detection_name, high_V,
+                  max_value, on_high_V_thresh_trackbar)
 
+paused = False
+imgx = cv.imread('/home/nekvinder/Desktop/color-picker-casual.png')
 
-kernel = np.ones((4, 4), 'int')
 while True:
     if not paused:
         frame = imgx
-    # frame = frame[50:-150, 50:-100]  # crop
-    # frame = cv.resize(frame, (600, 600), interpolation=cv.INTER_AREA)  # resize
+    frame = cv.resize(frame, (500, 500), interpolation=cv.INTER_AREA)  # resize
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    maskSeedsGroup = cv.inRange(hsv, (0, 0, 0), (179, 255, 243))
-    # erosion = cv.erode(mask, kernel)
-    dilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, kernel)
-    # res = cv.bitwise_and(frame, frame, mask=mask)
-    onlySeedsGroup = cv.bitwise_and(frame, frame, mask=dilatedMaskSeedsGroup)
+    mask = cv.inRange(hsv, (low_H, low_S, low_V), (high_H, high_S, high_V))
+
+    res = cv.bitwise_and(frame, frame, mask=mask)
     ret, thrshed = cv.threshold(cv.cvtColor(
-        onlySeedsGroup, cv.COLOR_BGR2GRAY), 3, 255, cv.THRESH_BINARY)
+        res, cv.COLOR_BGR2GRAY), 3, 255, cv.THRESH_BINARY)
     contours, hier = cv.findContours(
         thrshed, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
 
-    if len(contours) > 0:
-        for c in contours:
-            areaTmp = cv.contourArea(c)
-            if areaTmp > 4000:
-                x, y, w, h = cv.boundingRect(c)
-                cv.putText(frame, str(areaTmp), (x, y),
-                           cv.FONT_HERSHEY_PLAIN, 1, (255, 255, 0), 1)
-                cv.rectangle(onlySeedsGroup, (x, y),
-                             (x+w, y+h), (255, 255, 0), 5)
-
-    frame = frame[y: y+h, x:x+w]  # crop
-    onlySeedsGroup = onlySeedsGroup[y: y+h, x:x+w]  # crop
-    thrshed = thrshed[y: y+h, x:x+w]  # crop
-    # print("onlySeedsPixel", calcPercentage(maskSeedsGroup))
-
-    # cv.putText(frame, str(pauseMS), (0, 10),
-    #            cv.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
-    # showVid(3, mask, "mask")
-    # showVid(2, dilated, "dilated")
-    # showVid(6, thrshed, 'thrshed')
-
-    # Blue seeds filter
-    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    maskSeedsGroup = cv.inRange(hsv, (0, 0, 0), (180, 98, 150))
-    blueDilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, kernel)
-    blueSeedsGroup = cv.bitwise_and(
-        frame, frame, mask=blueDilatedMaskSeedsGroup)
-    ret, thrshed = cv.threshold(cv.cvtColor(
-        blueSeedsGroup, cv.COLOR_BGR2GRAY), 3, 255, cv.THRESH_BINARY)
-
-    # Yellow seeds filter
-    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    maskSeedsGroup = cv.inRange(hsv, (0, 102, 60), (62, 255, 255))
-    yellowDilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, kernel)
-    yellowSeedsGroup = cv.bitwise_and(
-        frame, frame, mask=yellowDilatedMaskSeedsGroup)
-    ret, thrshed = cv.threshold(cv.cvtColor(
-        yellowSeedsGroup, cv.COLOR_BGR2GRAY), 3, 255, cv.THRESH_BINARY)
-
-    # Green seeds filter
-    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    maskSeedsGroup = cv.inRange(hsv, (27, 0, 0), (84, 107, 184))
-    greenDilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, kernel)
-    greenSeedsGroup = cv.bitwise_and(
-        frame, frame, mask=greenDilatedMaskSeedsGroup)
-    ret, thrshed = cv.threshold(cv.cvtColor(
-        greenSeedsGroup, cv.COLOR_BGR2GRAY), 3, 255, cv.THRESH_BINARY)
-
-    print("blue", calcPercentage(blueDilatedMaskSeedsGroup))
-    print("green", calcPercentage(greenDilatedMaskSeedsGroup))
-    print("yellow", calcPercentage(yellowDilatedMaskSeedsGroup))
-    showVid(4, blueSeedsGroup, 'blueSeedsGroup')
-    showVid(5, yellowSeedsGroup, 'yellowSeedsGroup')
-    showVid(6, greenSeedsGroup, 'greenSeedsGroup')
-    showVid(2, onlySeedsGroup, 'onlySeedsGroup')
+    showVid(2, res, 'res')
+    showVid(3, thrshed, 'thrshed')
     showVid(1, frame, "frame")
 
-    key = cv.waitKey(1) & 0xFF
+    key = cv.waitKey(pauseMS) & 0xFF
     if key == ord("q"):
         break
     if key == ord(" "):
         paused = False if paused else True
+    if key == ord("p"):
+        print("mask = cv.inRange(hsv,np.array([{}, {}, {}]), np.array([{}, {}, {}]))".format(
+            low_H, low_S, low_V, high_H, high_S, high_V))
+    if key == ord("s"):
+        # config.saveConfig(low_H, low_S, low_V, high_H, high_S, high_V)
+        print('couldnt saved')
+    if key == ord("r"):
+        cv.setTrackbarPos(low_H_name, window_detection_name, 0)
+        cv.setTrackbarPos(low_S_name, window_detection_name, 0)
+        cv.setTrackbarPos(low_V_name, window_detection_name, 0)
+        cv.setTrackbarPos(high_H_name, window_detection_name, max_value_H)
+        cv.setTrackbarPos(high_S_name, window_detection_name, max_value)
+        cv.setTrackbarPos(high_V_name, window_detection_name, max_value)
+        print('reset')
 
 cv.destroyAllWindows()

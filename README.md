@@ -13,3 +13,11 @@ pip3 install opencv-python numpy
 sudo apt install libgl1-mesa-glx
 pm2 start server.js
 ```
+
+
+## constants
+
+dark yellow : 3,116,0,25,255,255
+light yellow : 24,100,0,38,255,255
+light green : 47,102,0,88,186,255
+dark green : 47,185,0,88,255,255

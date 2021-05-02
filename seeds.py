@@ -10,7 +10,7 @@ class SeedSeggregator:
     def __init__(self) -> None:
         self.__paused = False
         self.__kernel = np.ones((4, 4), 'int')
-        self.__size = 250
+        self.__size = 550
         self.__marginX = 150
         self.__marginY = 150
         self.__debugging = False
@@ -54,7 +54,6 @@ class SeedSeggregator:
         imgx = cv.imread(imagePath)
         if not self.__paused:
             frame = imgx
-        # frame = frame[50:-150, 50:-100]  # crop
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
         maskSeedsGroup = cv.inRange(hsv, (0, 0, 0), (179, 255, 243))
         dilatedMaskSeedsGroup = cv.dilate(maskSeedsGroup, self.__kernel)
@@ -75,9 +74,9 @@ class SeedSeggregator:
                     cv.rectangle(onlySeedsGroup, (x, y),
                                  (x+w, y+h), (255, 255, 0), 5)
 
-        frame = frame[y: y+h, x:x+w]
-        onlySeedsGroup = onlySeedsGroup[y: y+h, x:x+w]
-        thrshed = thrshed[y: y+h, x:x+w]
+        # frame = frame[y: y+h, x:x+w]
+        # onlySeedsGroup = onlySeedsGroup[y: y+h, x:x+w]
+        # thrshed = thrshed[y: y+h, x:x+w]
 
         Masks = {}
         Frames = {}
@@ -92,6 +91,7 @@ class SeedSeggregator:
             self.__showVid(1, frame, "frame")
             i = 2
             for k in self.__segregatorConfig:
+                print(Frames[k])
                 self.__showVid(i, Frames[k], k)
                 i += 1
 
