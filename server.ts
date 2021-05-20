@@ -1,21 +1,28 @@
 const port = 8000
 
-import express from 'express'
-const app = express()
+import * as express from 'express'
 const { PythonShell } = require('python-shell')
 var busboy = require('connect-busboy')
 var path = require('path')
 var fs = require('fs-extra')
 const { hostname } = require('os')
+import * as cors from 'cors'
 
-app.use(busboy())
+export const app = require('express')()
+
+app.use(busboy()).use(express.json())
 app.use('/Images', express.static(path.join(__dirname, 'Images/')))
 
 const getUrl = (req: any) => {
   return req.protocol + '://' + req.get('host') + req.originalUrl
 }
 
-app.post('/', (req, res, next) => {
+app.post('/adminLogin', (req, res, next) => {
+  const { username, password } = req.body
+  res.json(username == 'admin' && password == 'Pass123')
+})
+
+app.post('/seedsProcess', (req, res, next) => {
   try {
     var fstream
     req.pipe((req as any).busboy)
