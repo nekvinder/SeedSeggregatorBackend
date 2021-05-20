@@ -18,9 +18,10 @@
   },
   "homepage": "https://github.com/nekvinder/SeedSeggregatorBackend#readme",
   "dependencies": {
-    "connect-busboy": "^0.0.2",
+    "busboy": "^0.3.1",
     "cors": "^2.8.4",
     "express": "^4.17.1",
+    "express-busboy": "^8.0.0",
     "fs-extra": "^9.1.0",
     "python-shell": "^3.0.0",
     "reflect-metadata": "^0.1.13",
