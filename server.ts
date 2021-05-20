@@ -6,16 +6,21 @@ var busboy = require('connect-busboy')
 var path = require('path')
 var fs = require('fs-extra')
 const { hostname } = require('os')
-import * as cors from 'cors'
+const cors = require('cors')
+import { connect, createProcessRecord, getProcessRecord } from './services/db'
 
 export const app = require('express')()
 
-app.use(busboy()).use(express.json())
+app.use(busboy()).use(express.json()).use(cors())
 app.use('/Images', express.static(path.join(__dirname, 'Images/')))
 
-const getUrl = (req: any) => {
-  return req.protocol + '://' + req.get('host') + req.originalUrl
+const getImageDirPath = (req: any) => {
+  return req.protocol + '://' + req.get('host') + '/Images/'
 }
+
+app.get('/history', async (req, res, next) => {
+  res.json(await getProcessRecord(getImageDirPath(req)))
+})
 
 app.post('/adminLogin', (req, res, next) => {
   const { username, password } = req.body
@@ -34,18 +39,29 @@ app.post('/seedsProcess', (req, res, next) => {
       fstream.on('close', function (error) {
         console.log(error)
       }),
-        fstream.on('close', function () {
+        fstream.on('close', async function () {
           let options = {
             mode: 'text',
             pythonOptions: ['-u'],
             scriptPath: '',
             args: [fileFullPath],
           }
-          PythonShell.run('seeds.py', options, function (err, result) {
+          PythonShell.run('seeds.py', options, async function (err, result) {
             if (err) throw err
             result = JSON.parse(result)
-            result.imageName = getUrl(req) + result.imageName
-            res.json(result)
+            console.log(req.body)
+
+            // result.imageName = getUrl(req) + result.imageName
+            const dbData = await createProcessRecord(
+              {
+                imageName: filename,
+                title: req.body.title,
+                description: req.body.description,
+                percentages: JSON.stringify(result.percentages),
+              },
+              getImageDirPath(req)
+            )
+            res.json(dbData)
           })
         })
     })
