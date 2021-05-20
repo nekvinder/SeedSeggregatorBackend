@@ -17,13 +17,11 @@ const getUrl = (req: any) => {
 
 app.post('/', (req, res, next) => {
   try {
-    var fstream, uploadedFileName
+    var fstream
     req.pipe((req as any).busboy)
     ;(req as any).busboy.on('file', function (fieldname, file, filename) {
       filename = filename.split('.')[0] + new Date().toISOString() + '.' + filename.split('.')[1]
-      uploadedFileName = filename
       const fileFullPath = __dirname + '/Images/' + filename
-      console.log(9, fileFullPath)
       fstream = fs.createWriteStream(fileFullPath)
       file.pipe(fstream)
       fstream.on('close', function (error) {
