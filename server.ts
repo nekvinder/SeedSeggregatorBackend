@@ -1,6 +1,6 @@
 const port = 8000
 
-const express = require('express')
+import express from 'express'
 const app = express()
 const { PythonShell } = require('python-shell')
 var busboy = require('connect-busboy')
@@ -10,23 +10,21 @@ const { hostname } = require('os')
 
 app.use(busboy())
 app.use('/Images', express.static(path.join(__dirname, 'Images/')))
-app.use(function (req, res, next) {
-  req.getUrl = function () {
-    return req.protocol + "://" + req.get('host') + req.originalUrl;
-  }
-  return next();
-});
 
+const getUrl = (req: any) => {
+  return req.protocol + '://' + req.get('host') + req.originalUrl
+}
 
 app.post('/', (req, res, next) => {
   try {
-    console.log(req.getUrl())
     var fstream, uploadedFileName
-    req.pipe(req.busboy)
-    req.busboy.on('file', function (fieldname, file, filename) {
+    req.pipe((req as any).busboy)
+    ;(req as any).busboy.on('file', function (fieldname, file, filename) {
       filename = filename.split('.')[0] + new Date().toISOString() + '.' + filename.split('.')[1]
       uploadedFileName = filename
-      fstream = fs.createWriteStream(__dirname + '/Images/' + filename)
+      const fileFullPath = __dirname + '/Images/' + filename
+      console.log(9, fileFullPath)
+      fstream = fs.createWriteStream(fileFullPath)
       file.pipe(fstream)
       fstream.on('close', function (error) {
         console.log(error)
@@ -36,12 +34,12 @@ app.post('/', (req, res, next) => {
             mode: 'text',
             pythonOptions: ['-u'],
             scriptPath: '',
-            args: ['Images/' + uploadedFileName],
+            args: [fileFullPath],
           }
           PythonShell.run('seeds.py', options, function (err, result) {
             if (err) throw err
             result = JSON.parse(result)
-            result.imageName = req.getUrl() + result.imageName
+            result.imageName = getUrl(req) + result.imageName
             res.json(result)
           })
         })

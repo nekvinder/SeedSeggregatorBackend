@@ -109,7 +109,6 @@ class SeedSeggregator:
 
 seedSeggregator = SeedSeggregator()
 # seedSeggregator.enableDebugging()
-
 print(json.dumps(
     {"imageName": sys.argv[1], "percentages":  seedSeggregator.processImage(sys.argv[1])}))
 
