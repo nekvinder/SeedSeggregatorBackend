@@ -2,3 +2,4 @@ Images
 ImagesSrc
 out.txt
 node_modules
+dist/
