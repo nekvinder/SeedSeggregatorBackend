@@ -14,8 +14,11 @@ class SeedSeggregator:
         self.__marginX = 150
         self.__marginY = 150
         self.__debugging = False
-        self.__segregatorConfig = {"yellow": [0, 102, 60, 62, 255, 255],
-                                   "green": [27, 0, 0, 84, 107, 184]}
+        self.__segregatorConfig = {"dark_yellow": [3, 116, 0, 25, 255, 255],
+                                   "light_yellow": [24, 100, 0, 38, 255, 255],
+                                   "light_green": [47, 102, 0, 88, 186, 255],
+                                   "dark_green": [47, 185, 0, 88, 255, 255]
+                                   }
 
     def enableDebugging(self, ):
         self.__debugging = True
