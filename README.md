@@ -1,7 +1,7 @@
 ## Test
 
 Curl command to send post request to the server
-- `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://meet.nekvinder.com:8000/seedsProcess'`
+- `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://meet.nekvinder.com:8005/seedsProcess'`
 - `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://localhost:8000/seedsProcess'`
 
 ### Setup

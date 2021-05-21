@@ -1,5 +1,7 @@
 const port = 8000
+
 const imagesDirName = 'Images'
+
 import express from 'express'
 const { PythonShell } = require('python-shell')
 var path = require('path')
@@ -7,21 +9,20 @@ var fs = require('fs-extra')
 const { hostname } = require('os')
 const cors = require('cors')
 var bb = require('express-busboy')
-
-import { createProcessRecord, getProcessRecord } from './services/db'
+import { createProcessRecord, getProcessRecord, storagePath } from './services/db'
 
 export const app = express()
 
 bb.extend(app, {
   upload: true,
-  path: __dirname + '/' + imagesDirName + '/',
+  path: storagePath + '/' + imagesDirName + '/',
   allowedPath: /./,
 })
 
 app
   .use(cors())
   .use(express.json())
-  .use('/' + imagesDirName, express.static(path.join(__dirname, imagesDirName)))
+  .use('/' + imagesDirName, express.static(path.join(storagePath, imagesDirName)))
 
 const getImageDirPath = (req: any) => {
   return req.protocol + '://' + req.get('host') + '/' + imagesDirName + '/'

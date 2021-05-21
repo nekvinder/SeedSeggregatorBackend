@@ -17,12 +17,13 @@ class ImageProcessRecord extends Model {
   percentages: string
 }
 
+export const storagePath = './storage'
 const sequelize = new Sequelize({
   database: 'some_db',
   dialect: 'sqlite',
   username: 'root',
   password: '',
-  storage: ':memory:',
+  storage: storagePath + '/db.sqlite',
   models: [ImageProcessRecord], // or [Player, Team],
 })
 export const connect = async () => {
