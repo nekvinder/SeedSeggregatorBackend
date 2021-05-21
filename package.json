@@ -5,13 +5,15 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && nodemon dist/server.js"
+    "start": "tsc && nodemon dist/server.js",
+    "docker-build": "docker build --rm -t nekvinder/seedbackend:latest .",
+    "docker-publish": "npm run docker-build && docker push nekvinder/seedbackend:latest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nekvinder/SeedSeggregatorBackend.git"
   },
-  "author": "",
+  "author": "http://www.nekvinder.com",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/nekvinder/SeedSeggregatorBackend/issues"
