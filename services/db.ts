@@ -49,7 +49,7 @@ export const createProcessRecord = async (options: { title: string; description:
 }
 
 export const getProcessRecord = async (url?: string) => {
-  const record = await ImageProcessRecord.findAll()
+  const record = await ImageProcessRecord.findAll({ order: [['createdAt', 'DESC']] })
   return record.map((val) => parseRecords(val, url))
 }
 
