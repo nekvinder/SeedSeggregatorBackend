@@ -17,7 +17,7 @@ class ImageProcessRecord extends Model {
   percentages: string
 }
 
-export const storagePath = './storage'
+export const storagePath = '/usr/data'
 const sequelize = new Sequelize({
   database: 'some_db',
   dialect: 'sqlite',

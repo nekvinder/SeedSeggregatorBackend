@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  nginx:
+    image: nekvinder/seedbackend:latest
+    restart: unless-stopped
+    volumes:
+      - ~/seedData:/usr/data
+    ports:
+      - '8005:8000'
