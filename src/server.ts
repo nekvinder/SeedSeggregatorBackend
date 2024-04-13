@@ -5,8 +5,6 @@ const imagesDirName = 'Images'
 import express from 'express'
 const { PythonShell } = require('python-shell')
 var path = require('path')
-var fs = require('fs-extra')
-const { hostname } = require('os')
 const cors = require('cors')
 var bb = require('express-busboy')
 import { createProcessRecord, getProcessRecord, storagePath } from './services/db'
@@ -47,7 +45,7 @@ app.post('/seedsProcess', (req, res, next) => {
       scriptPath: '',
       args: [file.file],
     }
-    PythonShell.run('seeds.py', options, async function (err, result) {
+    PythonShell.run('seeds.py', options, async function(err, result) {
       if (err) throw err
       result = JSON.parse(result)
       const dbData = await createProcessRecord(

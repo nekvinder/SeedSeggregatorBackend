@@ -2,25 +2,15 @@
   "name": "seed_server",
   "version": "1.0.0",
   "description": "server wrapper for python based seggregator",
-  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && nodemon dist/server.js",
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc && cp ./seeds.py ./dist/seeds.py",
     "docker-build": "npm run build && docker build --rm -t nekvinder/seedbackend:latest .",
     "docker-publish": "npm run docker-build && docker push nekvinder/seedbackend:latest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nekvinder/SeedSeggregatorBackend.git"
-  },
   "author": "http://www.nekvinder.com",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/nekvinder/SeedSeggregatorBackend/issues"
-  },
-  "homepage": "https://github.com/nekvinder/SeedSeggregatorBackend#readme",
   "dependencies": {
     "busboy": "^0.3.1",
     "cors": "^2.8.4",

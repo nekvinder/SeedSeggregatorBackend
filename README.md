@@ -1,8 +1,10 @@
-## Test
+# SeedSeggregatorService
 
-Curl command to send post request to the server
-- `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://meet.nekvinder.com:8005/seedsProcess'`
-- `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://localhost:8000/seedsProcess'`
+A simple service on which you can upload images, and it will do a simple color based analysis on the image and retrun information if the iamge has met the criteria.
+
+Application : This powers a mobile app which is used by employee's in Dal[https://en.wikipedia.org/wiki/Dal] Processing units, and the data is centralised and shared with administrator. 
+
+- API implementation in Typescript. OpenCV operations, color analyser service in python.
 
 ### Setup
 
@@ -26,7 +28,14 @@ pm2 start server.js
 }
 ```
 
-## Api endpoints
+## API
+
+Curl command to send post request to the server
+- `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://meet.nekvinder.com:8005/seedsProcess'`
+- `curl -F "file=@ImagesSrc/DSC_0078.JPG" -F "title=test title" -F "description=test text" --location --request POST 'http://localhost:8000/seedsProcess'`
+
+
+## API endpoints
 
 ### Process Seeds File upload
 
